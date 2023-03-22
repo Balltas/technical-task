@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\ResolvedAddressRepository;
@@ -50,12 +52,12 @@ class ResolvedAddress
      */
     private $lng;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCountryCode(): ?string
+    public function getCountryCode(): string
     {
         return $this->countryCode;
     }
@@ -67,7 +69,7 @@ class ResolvedAddress
         return $this;
     }
 
-    public function getCity(): ?string
+    public function getCity(): string
     {
         return $this->city;
     }
@@ -79,7 +81,7 @@ class ResolvedAddress
         return $this;
     }
 
-    public function getStreet(): ?string
+    public function getStreet(): string
     {
         return $this->street;
     }
@@ -91,7 +93,7 @@ class ResolvedAddress
         return $this;
     }
 
-    public function getPostcode(): ?string
+    public function getPostcode(): string
     {
         return $this->postcode;
     }

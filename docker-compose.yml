@@ -3,9 +3,17 @@ services:
     php:
         build:
             context: ./
+            args:
+                TIMEZONE: ${TIMEZONE}
+                XDEBUG: ${APP_DEBUG:-false}
+                XDEBUG_PORT: ${SAIL_XDEBUG_PORT:-9003}
         volumes:
             - .:/app:cached
         working_dir: /app
+        environment:
+            SSH_AUTH_SOCK: ${SSH_AUTH_SOCK}
+            PHP_IDE_CONFIG: serverName=technical.task
+            XDEBUG_CONFIG: ${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}
         container_name: nt_coordinates_resolver_php
 
     nginx:
