@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\Geocoder;
 
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
@@ -11,6 +11,13 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class HereApiGeocoder implements GeocoderInterface
 {
+    private Client $client;
+
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
     public function geocode(Address $address): ?Coordinates
     {
         $apiKey = $_ENV['HEREMAPS_GEOCODING_API_KEY'];
@@ -28,8 +35,7 @@ class HereApiGeocoder implements GeocoderInterface
         ];
 
         try {
-            $client = new Client();
-            $response = $client->get('https://geocode.search.hereapi.com/v1/geocode', $params);
+            $response = $this->client->get('https://geocode.search.hereapi.com/v1/geocode', $params);
         } catch (GuzzleException $e) {
             return null;
         }

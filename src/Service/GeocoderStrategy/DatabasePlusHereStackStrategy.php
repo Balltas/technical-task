@@ -2,28 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\GeocoderStrategy;
 
 use App\Repository\ResolvedAddressRepository;
+use App\Service\Geocoder\GeocoderInterface;
+use App\Service\Geocoder\HereApiGeocoder;
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
 
-class WholeStackStrategy implements GeocoderStrategyInterface
+class DatabasePlusHereStackStrategy implements GeocoderStrategyInterface
 {
     private ResolvedAddressRepository $repository;
 
     private GeocoderInterface $hereApiGeocoder;
 
-    private GeocoderInterface $googleApisGeocoder;
-
     public function __construct(
         ResolvedAddressRepository $repository,
-        GeocoderInterface $googleApisGeocoder,
-        GeocoderInterface $hereApiGeocoder
+        HereApiGeocoder $hereApiGeocoder
     ) {
         $this->repository = $repository;
         $this->hereApiGeocoder = $hereApiGeocoder;
-        $this->googleApisGeocoder = $googleApisGeocoder;
     }
 
     public function getCoordinates(Address $address): ?Coordinates
@@ -34,19 +32,13 @@ class WholeStackStrategy implements GeocoderStrategyInterface
             return new Coordinates($resolvedAddress->getLat(), $resolvedAddress->getLng());
         }
 
-        $coordinates = $this->googleApisGeocoder->geocode($address);
+        $coordinates = $this->hereApiGeocoder->geocode($address);
 
         if ($coordinates) {
             $this->repository->saveResolvedAddress($address, $coordinates);
             return $coordinates;
         }
 
-        $coordinates = $this->hereApiGeocoder->geocode($address);
-
-        if ($coordinates) {
-            $this->repository->saveResolvedAddress($address, $coordinates);
-        }
-
-        return $coordinates;
+        return null;
     }
 }

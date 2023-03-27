@@ -2,34 +2,41 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\GeocoderStrategy;
 
 use App\Repository\ResolvedAddressRepository;
+use App\Service\Geocoder\GeocoderInterface;
+use App\Service\Geocoder\GoogleApiGeocoder;
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
+use Exception;
 
 class GoogleStrategy implements GeocoderStrategyInterface
 {
     private ResolvedAddressRepository $repository;
 
-    private GeocoderInterface $googleApisGeocoder;
+    private GeocoderInterface $googleApiGeocoder;
 
     public function __construct(
         ResolvedAddressRepository $repository,
-        GeocoderInterface $googleApisGeocoder
+        GoogleApiGeocoder $googleApiGeocoder
     ) {
         $this->repository = $repository;
-        $this->googleApisGeocoder = $googleApisGeocoder;
+        $this->googleApiGeocoder = $googleApiGeocoder;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getCoordinates(Address $address): ?Coordinates
     {
-        $coordinates = $this->googleApisGeocoder->geocode($address);
+        $coordinates = $this->googleApiGeocoder->geocode($address);
 
         if ($coordinates) {
             $this->repository->saveResolvedAddress($address, $coordinates);
+            return $coordinates;
         }
 
-        return $coordinates;
+        return null;
     }
 }

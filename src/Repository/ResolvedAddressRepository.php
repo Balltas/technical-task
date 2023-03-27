@@ -45,8 +45,8 @@ class ResolvedAddressRepository extends ServiceEntityRepository
 
         if ($coordinates !== null) {
             $resolvedAddress
-                ->setLat((string) $coordinates->getLat())
-                ->setLng((string) $coordinates->getLng());
+                ->setLat($coordinates->getLat())
+                ->setLng($coordinates->getLng());
         }
 
         $this->getEntityManager()->persist($resolvedAddress);

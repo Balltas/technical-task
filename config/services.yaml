@@ -29,22 +29,24 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Service\WholeStackStrategy:
-        arguments:
-            $googleApisGeocoder: '@App\Service\GoogleApisGeocoder'
-            $hereApiGeocoder: '@App\Service\HereApiGeocoder'
+    GuzzleHttp\Client:
+        autowire: true
+        autoconfigure: true
 
-    App\Service\GoogleStrategy:
-        arguments:
-            $googleApisGeocoder: '@App\Service\GoogleApisGeocoder'
+    App\Service\Geocoder\:
+        resource: '../src/Service/Geocoder/*'
+        tags: [ 'app.geocoder' ]
+        exclude: '../src/Service/Geocoder/*Interface.php'
 
-    App\Service\DatabasePlusHereStackStrategy:
-        arguments:
-            $hereApiGeocoder: '@App\Service\HereApiGeocoder'
+    App\Service\GeocoderStrategy\WholeStackStrategy:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $geocoders: !tagged_iterator app.geocoder
 
     #swith between strategies by uncommenting only one:
     App\Controller\CoordinatesController:
         arguments:
-            $geocoderService: '@App\Service\WholeStackStrategy'
-            #$geocoderService: '@App\Service\GoogleStrategy'
-            #$geocoderService: '@App\Service\DatabasePlusHereStackStrategy'
+            $geocoderService: '@App\Service\GeocoderStrategy\WholeStackStrategy'
+            #$geocoderService: '@App\Service\GeocoderStrategy\GoogleStrategy'
+            #$geocoderService: '@App\Service\GeocoderStrategy\DatabasePlusHereStackStrategy' #sitai strategijai functional testas feilina. Reiketu atskiro mockHandlerio.

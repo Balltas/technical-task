@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\Geocoder;
 
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
@@ -10,8 +10,15 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
-class GoogleApisGeocoder implements GeocoderInterface
+class GoogleApiGeocoder implements GeocoderInterface
 {
+    private Client $client;
+
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
     /**
      * @throws Exception
      */
@@ -32,12 +39,10 @@ class GoogleApisGeocoder implements GeocoderInterface
         ];
 
         try {
-            $client = new Client();
-            $response = $client->get('https://maps.googleapis.com/maps/api/geocode/json', $params);
+            $response = $this->client->get('https://maps.googleapis.com/maps/api/geocode/json', $params);
         } catch (GuzzleException $e) {
             return null;
         }
-
         $decodedResponse = json_decode($response->getBody()->getContents());
 
         if (

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\GeocoderStrategyInterface;
+use App\Service\GeocoderStrategy\GeocoderStrategyInterface;
 use App\ValueObject\Address;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,10 +32,11 @@ class CoordinatesController extends AbstractController
     }
 
     /**
-     * @Route(path="/coordinates", name="coordinates")
+     * @Route(path="/coordinates", name="coordinates", methods="post")
      */
     public function geocodeAction(Request $request): Response
     {
+        /** @var Address $address */
         $address = $this->serializer->deserialize(
             $request->getContent(),
             Address::class,
@@ -49,6 +50,7 @@ class CoordinatesController extends AbstractController
         }
 
         $coordinates = $this->geocoderService->getCoordinates($address);
+
         if ($coordinates === null) {
             return new JsonResponse([], 404);
         }

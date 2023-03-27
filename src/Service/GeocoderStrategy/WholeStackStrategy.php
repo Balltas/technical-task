@@ -2,26 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\GeocoderStrategy;
 
 use App\Repository\ResolvedAddressRepository;
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
+use Exception;
 
-class DatabasePlusHereStackStrategy implements GeocoderStrategyInterface
+class WholeStackStrategy implements GeocoderStrategyInterface
 {
     private ResolvedAddressRepository $repository;
 
-    private GeocoderInterface $hereApiGeocoder;
+    private iterable $geocoders;
 
     public function __construct(
         ResolvedAddressRepository $repository,
-        GeocoderInterface $hereApiGeocoder
+        iterable $geocoders
     ) {
         $this->repository = $repository;
-        $this->hereApiGeocoder = $hereApiGeocoder;
+        $this->geocoders = $geocoders;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getCoordinates(Address $address): ?Coordinates
     {
         $resolvedAddress = $this->repository->getByAddress($address);
@@ -30,12 +34,15 @@ class DatabasePlusHereStackStrategy implements GeocoderStrategyInterface
             return new Coordinates($resolvedAddress->getLat(), $resolvedAddress->getLng());
         }
 
-        $coordinates = $this->hereApiGeocoder->geocode($address);
+        foreach ($this->geocoders as $geocoder) {
+            $coordinates = $geocoder->geocode($address);
 
-        if ($coordinates) {
-            $this->repository->saveResolvedAddress($address, $coordinates);
+            if ($coordinates) {
+                $this->repository->saveResolvedAddress($address, $coordinates);
+                return $coordinates;
+            }
         }
 
-        return $coordinates;
+        return null;
     }
 }

@@ -1,0 +1,33 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  App\Service\Geocoder\GoogleApiGeocoder.test:
+    class: App\Service\Geocoder\GoogleApiGeocoder
+    arguments:
+      - '@test.guzzle_client'
+    tags: [ 'app.geocoder' ]
+
+  App\Service\Geocoder\HereApiGeocoder.test:
+    class: App\Service\Geocoder\HereApiGeocoder
+    arguments:
+      - '@test.guzzle_client'
+    tags: [ 'app.geocoder' ]
+
+  test.guzzle_client:
+    class: GuzzleHttp\Client
+    arguments:
+      - { handler: '@test.mock_handler' }
+
+  test.mock_handler:
+    class: GuzzleHttp\Handler\MockHandler
+    arguments:
+      - []
+
+  App\Service\Geocoder\GoogleApiGeocoder:
+    alias: App\Service\Geocoder\GoogleApiGeocoder.test
+
+  App\Service\Geocoder\HereApiGeocoder:
+    alias: App\Service\Geocoder\HereApiGeocoder.test

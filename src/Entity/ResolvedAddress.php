@@ -20,41 +20,48 @@ class ResolvedAddress
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=3)
      */
-    private $countryCode;
+    private string $countryCode;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $city;
+    private string $city;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $street;
+    private string $street;
 
     /**
      * @ORM\Column(type="string", length=16)
      */
-    private $postcode;
+    private string $postcode;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=true)
      */
-    private $lat;
+    private ?string $lat = null;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=true)
      */
-    private $lng;
+    private ?string $lng = null;
 
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getCountryCode(): string
