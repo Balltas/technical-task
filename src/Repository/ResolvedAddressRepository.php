@@ -8,14 +8,13 @@ use App\Entity\ResolvedAddress;
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method ResolvedAddress|null find($id, $lockMode = null, $lockVersion = null)
  * @method ResolvedAddress|null findOneBy(array $criteria, array $orderBy = null)
- * @method ResolvedAddress[]    findAll()
- * @method ResolvedAddress[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ResolvedAddress[] findAll()
+ * @method ResolvedAddress[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ResolvedAddressRepository extends ServiceEntityRepository
 {

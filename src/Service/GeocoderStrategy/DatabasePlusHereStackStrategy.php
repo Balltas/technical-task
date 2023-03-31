@@ -10,6 +10,10 @@ use App\Service\Geocoder\HereApiGeocoder;
 use App\ValueObject\Address;
 use App\ValueObject\Coordinates;
 
+/**
+ * DatabasePlusHereStackStrategy Uses database to fetch info first and then uses HereApi geocoder. Also stores
+ * information from HereApi
+ */
 class DatabasePlusHereStackStrategy implements GeocoderStrategyInterface
 {
     private ResolvedAddressRepository $repository;

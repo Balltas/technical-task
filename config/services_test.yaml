@@ -4,30 +4,24 @@ services:
     autoconfigure: true
     public: true
 
-  App\Service\Geocoder\GoogleApiGeocoder.test:
-    class: App\Service\Geocoder\GoogleApiGeocoder
+  GuzzleHttp\Client:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  #Each strategy must be tested individually to ensure it works correctly.
+  #If you create more strategies for /coordinates endpoint. You should add them here.
+  App\Controller\CoordinatesController.test.WholeStackStrategy:
+    class: App\Controller\CoordinatesController
     arguments:
-      - '@test.guzzle_client'
-    tags: [ 'app.geocoder' ]
+      $geocoderService: '@App\Service\GeocoderStrategy\WholeStackStrategy'
 
-  App\Service\Geocoder\HereApiGeocoder.test:
-    class: App\Service\Geocoder\HereApiGeocoder
+  App\Controller\CoordinatesController.test.GoogleStrategy:
+    class: App\Controller\CoordinatesController
     arguments:
-      - '@test.guzzle_client'
-    tags: [ 'app.geocoder' ]
+      $geocoderService: '@App\Service\GeocoderStrategy\GoogleStrategy'
 
-  test.guzzle_client:
-    class: GuzzleHttp\Client
+  App\Controller\CoordinatesController.test.DatabasePlusHereStackStrategy:
+    class: App\Controller\CoordinatesController
     arguments:
-      - { handler: '@test.mock_handler' }
-
-  test.mock_handler:
-    class: GuzzleHttp\Handler\MockHandler
-    arguments:
-      - []
-
-  App\Service\Geocoder\GoogleApiGeocoder:
-    alias: App\Service\Geocoder\GoogleApiGeocoder.test
-
-  App\Service\Geocoder\HereApiGeocoder:
-    alias: App\Service\Geocoder\HereApiGeocoder.test
+      $geocoderService: '@App\Service\GeocoderStrategy\DatabasePlusHereStackStrategy'

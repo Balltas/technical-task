@@ -30,24 +30,32 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    #Let's add guzzle client into container because we will need to inject it into our geocoding components because
+    #we need this to be mockable because we don't want to send actual requests when we run tests.
     GuzzleHttp\Client:
         autowire: true
         autoconfigure: true
 
+    #let's tag all geocoders as we will need them in wholestack strategy
     App\Service\Geocoder\:
         resource: '../src/Service/Geocoder/*'
         tags: [ 'app.geocoder' ]
         exclude: '../src/Service/Geocoder/*Interface.php'
 
+    #wholestack strategy injects all geocoders into an array. To add a new geocoder into Wholes-tack strategy simply
+    #create a new geocoder class that implements the same interface as the rest. No more changes needed.
     App\Service\GeocoderStrategy\WholeStackStrategy:
         autowire: true
         autoconfigure: true
         bind:
             $geocoders: !tagged_iterator app.geocoder
 
-    #swith between strategies by uncommenting only one:
+    #swith between strategies by uncommenting only one injected parameter.
+    #Controller does not care about the strategy that we are using. It only cares that it has a specific functions that
+    #we are calling aka the interface that the strategy implements. To create a new strategy simply add a class file and
+    #then replace this configuration argument $geocoderService by created strategy. No more changes needed.
     App\Controller\CoordinatesController:
         arguments:
             $geocoderService: '@App\Service\GeocoderStrategy\WholeStackStrategy'
             #$geocoderService: '@App\Service\GeocoderStrategy\GoogleStrategy'
-            #$geocoderService: '@App\Service\GeocoderStrategy\DatabasePlusHereStackStrategy' #sitai strategijai functional testas feilina. Reiketu atskiro mockHandlerio.
+            #$geocoderService: '@App\Service\GeocoderStrategy\DatabasePlusHereStackStrategy'

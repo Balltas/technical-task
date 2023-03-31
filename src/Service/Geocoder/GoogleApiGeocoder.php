@@ -43,6 +43,7 @@ class GoogleApiGeocoder implements GeocoderInterface
         } catch (GuzzleException $e) {
             return null;
         }
+
         $decodedResponse = json_decode($response->getBody()->getContents());
 
         if (
